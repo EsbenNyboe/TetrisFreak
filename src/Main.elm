@@ -1,3 +1,6 @@
+-- elm reactor
+-- TODO: install optional Elm stuff
+
 module Main exposing (..)
 
 import Browser
@@ -16,19 +19,14 @@ main =
     }
     
 -- MODEL
-type alias Model = List Cube
+type alias Model = { time : Float, allCubes : AllCubes}
+
+type alias AllCubes = List Cube
 
 type alias Cube = 
   { x : Int
   , y : Int
   }
-
-init: () -> (Model, Cmd Msg)
-init _ = ([{x=100, y=200}, {x=200, y=200}], Cmd.none)
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  Sub.none
 
 type Msg
   = Move Direction
@@ -37,11 +35,22 @@ type Msg
 type Direction
   = Left | Right | Up | Down
 
+init: () -> (Model, Cmd Msg)
+init _ = ({time = 0, allCubes = [{x=100, y=200}, {x=200, y=200}]}, Cmd.none)
+
+subscriptions : Model -> Sub Msg
+subscriptions _ = 
+  Sub.none
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = 
+  ({model | allCubes = modifyCubeList msg model.allCubes}, Cmd.none)
+
+modifyCubeList : Msg -> AllCubes -> AllCubes
+modifyCubeList msg allCubes = 
   case msg of
-      SpawnCube -> (addCube {x=50, y=50} model, Cmd.none)
-      Move direction -> (List.map (updateSingleCube direction) model, Cmd.none)
+      SpawnCube -> (addCube {x=50, y=50} allCubes)
+      Move direction -> (List.map (updateSingleCube direction) allCubes)
 
 updateSingleCube : Direction -> Cube -> Cube
 updateSingleCube direction cube = 
@@ -55,7 +64,7 @@ updateSingleCube direction cube =
     Down ->
       { cube | y = cube.y + 10 }
 
-addCube : Cube -> Model -> Model
+addCube : Cube -> AllCubes -> AllCubes
 addCube = (::)
 -- addCube cube model = 
 --   cube :: model
@@ -66,29 +75,29 @@ view model =
   div []
     [ button [ onClick (Move Left) ] [ text "Left" ]
     , button [ onClick (Move Right) ] [ text "Right" ]
-    , div [] [ text (getFirstCubeX model) ]
+    , div [] [ text (getFirstCubeX model.allCubes) ]
     , button [ onClick (Move Up) ] [ text "Up" ]
     , button [ onClick (Move Down) ] [ text "Down" ]
-    , div [] [ text (getFirstCubeY model) ]
+    , div [] [ text (getFirstCubeY model.allCubes) ]
     , button [ onClick SpawnCube ] [ text "Spawn" ]
-    , drawBoxes model
+    , drawBoxes model.allCubes
     ]
 
-getFirstCubeX: Model -> String
+getFirstCubeX: AllCubes -> String
 getFirstCubeX model = 
   String.fromInt 
     (case List.head model of 
       Just cube -> cube.x
       Nothing -> 0)
 
-getFirstCubeY: Model -> String
+getFirstCubeY: AllCubes -> String
 getFirstCubeY model = 
   String.fromInt 
     (case List.head model of 
       Just cube -> cube.y
       Nothing -> 0)
 
-drawBoxes: Model -> Html Msg
+drawBoxes: AllCubes -> Html Msg
 drawBoxes model = svg
     [ viewBox "0 0 400 400"
     , width "400"
