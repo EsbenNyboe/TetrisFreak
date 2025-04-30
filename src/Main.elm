@@ -45,21 +45,11 @@ subscriptions _ = Browser.Events.onAnimationFrameDelta OnAnimationFrameDelta
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = 
-  ({time = modifyTime msg model.time, allCubes = modifyCubeList msg model.allCubes}, Cmd.none)
-
-modifyTime : Msg -> Float -> Float
-modifyTime msg time =
-  case msg of
-    SpawnCube -> time
-    Move _ -> time
-    OnAnimationFrameDelta delta -> time + delta
-
-modifyCubeList : Msg -> AllCubes -> AllCubes
-modifyCubeList msg allCubes = 
-  case msg of
-      SpawnCube -> (addCube {x=50, y=50} allCubes)
-      Move direction -> (List.map (updateSingleCube direction) allCubes)
-      OnAnimationFrameDelta delta -> allCubes
+  (case msg of
+    SpawnCube -> { model | allCubes = (addCube {x=50, y=50} model.allCubes) }
+    Move direction -> { model | allCubes = (List.map (updateSingleCube direction) model.allCubes) }
+    OnAnimationFrameDelta delta -> { model | time = model.time + delta }
+    , Cmd.none)
 
 updateSingleCube : Direction -> Cube -> Cube
 updateSingleCube direction cube = 
