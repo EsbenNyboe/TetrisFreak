@@ -9,6 +9,7 @@ import Svg exposing (svg, rect)
 import Svg.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Svg exposing (Svg)
+import Browser.Events
 
 main =
   Browser.element
@@ -31,6 +32,7 @@ type alias Cube =
 type Msg
   = Move Direction
   | SpawnCube
+  | OnAnimationFrameDelta Float
 
 type Direction
   = Left | Right | Up | Down
@@ -39,8 +41,7 @@ init: () -> (Model, Cmd Msg)
 init _ = ({time = 0, allCubes = [{x=100, y=200}, {x=200, y=200}]}, Cmd.none)
 
 subscriptions : Model -> Sub Msg
-subscriptions _ = 
-  Sub.none
+subscriptions _ = Browser.Events.onAnimationFrameDelta OnAnimationFrameDelta
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = 
@@ -51,6 +52,7 @@ modifyCubeList msg allCubes =
   case msg of
       SpawnCube -> (addCube {x=50, y=50} allCubes)
       Move direction -> (List.map (updateSingleCube direction) allCubes)
+      OnAnimationFrameDelta delta -> allCubes
 
 updateSingleCube : Direction -> Cube -> Cube
 updateSingleCube direction cube = 
