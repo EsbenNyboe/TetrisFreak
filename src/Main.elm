@@ -45,7 +45,14 @@ subscriptions _ = Browser.Events.onAnimationFrameDelta OnAnimationFrameDelta
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = 
-  ({model | allCubes = modifyCubeList msg model.allCubes}, Cmd.none)
+  ({time = modifyTime msg model.time, allCubes = modifyCubeList msg model.allCubes}, Cmd.none)
+
+modifyTime : Msg -> Float -> Float
+modifyTime msg time =
+  case msg of
+    SpawnCube -> time
+    Move _ -> time
+    OnAnimationFrameDelta delta -> time + delta
 
 modifyCubeList : Msg -> AllCubes -> AllCubes
 modifyCubeList msg allCubes = 
@@ -75,7 +82,8 @@ addCube = (::)
 view: Model -> Html Msg
 view model = 
   div []
-    [ button [ onClick (Move Left) ] [ text "Left" ]
+    [ div [] [ text (String.fromFloat model.time) ]
+    , button [ onClick (Move Left) ] [ text "Left" ]
     , button [ onClick (Move Right) ] [ text "Right" ]
     , div [] [ text (getFirstCubeX model.allCubes) ]
     , button [ onClick (Move Up) ] [ text "Up" ]
