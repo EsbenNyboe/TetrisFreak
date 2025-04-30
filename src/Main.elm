@@ -1,4 +1,5 @@
 -- elm reactor
+-- F8
 
 
 module Main exposing (..)
@@ -11,6 +12,7 @@ import Svg exposing (Svg, rect, svg)
 import Svg.Attributes exposing (..)
 
 
+main : Program () Model Msg
 main =
     Browser.element
         { init = init
