@@ -27,18 +27,19 @@ type alias AllCubes = List Cube
 type alias Cube = 
   { x : Float
   , y : Float
+  , velX : Float
+  , velY : Float
   }
 
 type Msg
-  = Move Direction
-  | SpawnCube
+  = SpawnCube
   | OnAnimationFrameDelta Float
 
 type Direction
   = Left | Right | Up | Down
 
 init: () -> (Model, Cmd Msg)
-init _ = ({time = 0, allCubes = [{x=100, y=200}, {x=200, y=200}]}, Cmd.none)
+init _ = ({time = 0, allCubes = []}, Cmd.none)
 
 subscriptions : Model -> Sub Msg
 subscriptions _ = Browser.Events.onAnimationFrameDelta OnAnimationFrameDelta
@@ -46,22 +47,14 @@ subscriptions _ = Browser.Events.onAnimationFrameDelta OnAnimationFrameDelta
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model = 
   (case msg of
-    SpawnCube -> { model | allCubes = (addCube {x=50, y=50} model.allCubes) }
-    Move direction -> { model | allCubes = (List.map (updateSingleCube direction) model.allCubes) }
-    OnAnimationFrameDelta delta -> { time = model.time + delta, allCubes = (List.map (updateSingleCube Right) model.allCubes) }
+    SpawnCube -> { model | allCubes = (addCube {x=50, y=50, velX=1, velY=0} model.allCubes) }
+    OnAnimationFrameDelta delta -> { time = model.time + delta, allCubes = (List.map updateSingleCube model.allCubes) }
     , Cmd.none)
 
-updateSingleCube : Direction -> Cube -> Cube
-updateSingleCube direction cube = 
-  case direction of
-    Left ->
-      { cube | x = cube.x - 10 }
-    Right ->
-      { cube | x = cube.x + 10 }
-    Up ->
-      { cube | y = cube.y - 10 }
-    Down ->
-      { cube | y = cube.y + 10 }
+updateSingleCube : Cube -> Cube
+updateSingleCube { x, y, velX, velY } = 
+  { x = x + velX, y = y + velY, 
+  velX = velX, velY = velY }
 
 addCube : Cube -> AllCubes -> AllCubes
 addCube = (::)
@@ -73,29 +66,9 @@ view: Model -> Html Msg
 view model = 
   div []
     [ div [] [ text (String.fromFloat model.time) ]
-    , button [ onClick (Move Left) ] [ text "Left" ]
-    , button [ onClick (Move Right) ] [ text "Right" ]
-    , div [] [ text (getFirstCubeX model.allCubes) ]
-    , button [ onClick (Move Up) ] [ text "Up" ]
-    , button [ onClick (Move Down) ] [ text "Down" ]
-    , div [] [ text (getFirstCubeY model.allCubes) ]
     , button [ onClick SpawnCube ] [ text "Spawn" ]
     , drawBoxes model.allCubes
     ]
-
-getFirstCubeX: AllCubes -> String
-getFirstCubeX model = 
-  String.fromFloat 
-    (case List.head model of 
-      Just cube -> cube.x
-      Nothing -> 0)
-
-getFirstCubeY: AllCubes -> String
-getFirstCubeY model = 
-  String.fromFloat 
-    (case List.head model of 
-      Just cube -> cube.y
-      Nothing -> 0)
 
 drawBoxes: AllCubes -> Html Msg
 drawBoxes model = svg
