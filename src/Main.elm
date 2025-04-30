@@ -25,8 +25,8 @@ type alias Model = { time : Float, allCubes : AllCubes}
 type alias AllCubes = List Cube
 
 type alias Cube = 
-  { x : Int
-  , y : Int
+  { x : Float
+  , y : Float
   }
 
 type Msg
@@ -85,14 +85,14 @@ view model =
 
 getFirstCubeX: AllCubes -> String
 getFirstCubeX model = 
-  String.fromInt 
+  String.fromFloat 
     (case List.head model of 
       Just cube -> cube.x
       Nothing -> 0)
 
 getFirstCubeY: AllCubes -> String
 getFirstCubeY model = 
-  String.fromInt 
+  String.fromFloat 
     (case List.head model of 
       Just cube -> cube.y
       Nothing -> 0)
@@ -107,8 +107,8 @@ drawBoxes model = svg
 
 drawBox: Cube -> Svg Msg
 drawBox cube = rect
-        [ x (String.fromInt cube.x)
-        , y (String.fromInt cube.y)
+        [ x (String.fromFloat cube.x)
+        , y (String.fromFloat cube.y)
         , width "40"
         , height "40"
         , fill "red"
