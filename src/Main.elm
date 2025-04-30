@@ -48,7 +48,7 @@ update msg model =
   (case msg of
     SpawnCube -> { model | allCubes = (addCube {x=50, y=50} model.allCubes) }
     Move direction -> { model | allCubes = (List.map (updateSingleCube direction) model.allCubes) }
-    OnAnimationFrameDelta delta -> { model | time = model.time + delta }
+    OnAnimationFrameDelta delta -> { time = model.time + delta, allCubes = (List.map (updateSingleCube Right) model.allCubes) }
     , Cmd.none)
 
 updateSingleCube : Direction -> Cube -> Cube
