@@ -72,7 +72,7 @@ startDirection =
 
 startSpeed : Float
 startSpeed =
-    10
+    2
 
 
 init : () -> ( Model, Cmd Msg )
@@ -89,7 +89,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     ( case msg of
         SpawnCube ->
-            { model | allCubes = addCube { x = 50, y = 50, velX = startDirection.x * startSpeed, velY = startDirection.y * startSpeed } model.allCubes }
+            { model | allCubes = addCube { x = mapSize / 2, y = mapSize / 2, velX = startDirection.x * startSpeed, velY = startDirection.y * startSpeed } model.allCubes }
 
         OnAnimationFrameDelta delta ->
             { time = model.time + delta, allCubes = List.map updateSingleCube model.allCubes }
@@ -131,7 +131,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ div [] [ text (String.fromFloat model.time) ]
-        , button [ onClick SpawnCube ] [ text "Spawn" ]
+        , button [ Html.Events.onClick SpawnCube ] [ text "Spawn" ]
         , drawBoxes model.allCubes
         ]
 
