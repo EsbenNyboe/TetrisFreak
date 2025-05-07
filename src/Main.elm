@@ -65,6 +65,16 @@ cubeSize =
     40
 
 
+startDirection : { x : Float, y : Float }
+startDirection =
+    { x = 1, y = 0.5 }
+
+
+startSpeed : Float
+startSpeed =
+    10
+
+
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( { time = 0, allCubes = [] }, Cmd.none )
@@ -79,7 +89,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     ( case msg of
         SpawnCube ->
-            { model | allCubes = addCube { x = 50, y = 50, velX = 1, velY = 0.5 } model.allCubes }
+            { model | allCubes = addCube { x = 50, y = 50, velX = startDirection.x * startSpeed, velY = startDirection.y * startSpeed } model.allCubes }
 
         OnAnimationFrameDelta delta ->
             { time = model.time + delta, allCubes = List.map updateSingleCube model.allCubes }
