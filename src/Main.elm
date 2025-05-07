@@ -7,10 +7,10 @@ module Main exposing (..)
 import Browser
 import Browser.Events
 import Html exposing (Html, button, div, text)
+import Html.Attributes
 import Html.Events exposing (onClick)
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes exposing (..)
-import Html.Attributes
 
 
 main : Program () Model Msg
@@ -54,11 +54,15 @@ type Direction
     | Up
     | Down
 
+
 mapSize : Float
-mapSize = 400
+mapSize =
+    400
+
 
 cubeSize : Float
-cubeSize = 40
+cubeSize =
+    40
 
 
 init : () -> ( Model, Cmd Msg )
@@ -87,8 +91,18 @@ updateSingleCube : Cube -> Cube
 updateSingleCube { x, y, velX, velY } =
     { x = x + velX
     , y = y + velY
-    , velX = if x + velX <= mapSize - cubeSize && x + velX >= cubeSize then velX else velX * -1
-    , velY = if y + velY <= mapSize - cubeSize && y + velY >= cubeSize then velY else velY * -1
+    , velX =
+        if x + velX <= mapSize - cubeSize && x + velX >= cubeSize then
+            velX
+
+        else
+            velX * -1
+    , velY =
+        if y + velY <= mapSize - cubeSize && y + velY >= cubeSize then
+            velY
+
+        else
+            velY * -1
     }
 
 
@@ -115,9 +129,9 @@ view model =
 drawBoxes : AllCubes -> Html Msg
 drawBoxes model =
     svg
-        [ viewBox "0 0 400 400"
-        , width "400"
-        , height "400"
+        [ viewBox (String.concat [ "0 0 ", String.fromFloat mapSize, " ", String.fromFloat mapSize ])
+        , width (String.fromFloat mapSize)
+        , height (String.fromFloat mapSize)
         , Html.Attributes.style "background-color" "black"
         ]
         (List.map drawBox model)
@@ -128,8 +142,8 @@ drawBox cube =
     rect
         [ x (String.fromFloat cube.x)
         , y (String.fromFloat cube.y)
-        , width "40"
-        , height "40"
+        , width (String.fromFloat cubeSize)
+        , height (String.fromFloat cubeSize)
         , fill "red"
         , stroke "black"
         , strokeWidth "2"
