@@ -1,14 +1,16 @@
 -- elm reactor
 -- F8
+-- Set direction, from middle of screen to point that was clicked. Example: https://ellie-app.com/vp6SMVTgYVPa1
 
 
 module Main exposing (..)
 
 import Browser
-import Browser.Events
+import Browser.Events exposing (onClick)
 import Html exposing (Html, button, div, text)
 import Html.Attributes
 import Html.Events exposing (onClick)
+import Json.Decode as Decode
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes exposing (..)
 
@@ -28,7 +30,7 @@ main =
 
 
 type alias Model =
-    { time : Float, allCubes : AllCubes }
+    { time : Float, allCubes : AllCubes, lastClickedPoint : { x : Int, y : Int } }
 
 
 type alias AllCubes =
@@ -46,6 +48,7 @@ type alias Cube =
 type Msg
     = SpawnCube
     | OnAnimationFrameDelta Float
+    | Click { x : Int, y : Int }
 
 
 type Direction
@@ -77,7 +80,7 @@ startSpeed =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { time = 0, allCubes = [] }, Cmd.none )
+    ( { time = 0, allCubes = [], lastClickedPoint = { x = 0, y = 0 } }, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
@@ -92,7 +95,10 @@ update msg model =
             { model | allCubes = addCube { x = mapSize / 2, y = mapSize / 2, velX = startDirection.x * startSpeed, velY = startDirection.y * startSpeed } model.allCubes }
 
         OnAnimationFrameDelta delta ->
-            { time = model.time + delta, allCubes = List.map updateSingleCube model.allCubes }
+            { time = model.time + delta, allCubes = List.map updateSingleCube model.allCubes, lastClickedPoint = model.lastClickedPoint }
+
+        Click point ->
+            { model | lastClickedPoint = point }
     , Cmd.none
     )
 
