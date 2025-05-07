@@ -54,6 +54,12 @@ type Direction
     | Up
     | Down
 
+mapSize : Float
+mapSize = 400
+
+cubeSize : Float
+cubeSize = 40
+
 
 init : () -> ( Model, Cmd Msg )
 init _ =
@@ -69,7 +75,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     ( case msg of
         SpawnCube ->
-            { model | allCubes = addCube { x = 50, y = 50, velX = 1, velY = 1 } model.allCubes }
+            { model | allCubes = addCube { x = 50, y = 50, velX = 1, velY = 0.5 } model.allCubes }
 
         OnAnimationFrameDelta delta ->
             { time = model.time + delta, allCubes = List.map updateSingleCube model.allCubes }
@@ -81,8 +87,8 @@ updateSingleCube : Cube -> Cube
 updateSingleCube { x, y, velX, velY } =
     { x = x + velX
     , y = y + velY
-    , velX = velX
-    , velY = velY
+    , velX = if x + velX <= mapSize - cubeSize && x + velX >= cubeSize then velX else velX * -1
+    , velY = if y + velY <= mapSize - cubeSize && y + velY >= cubeSize then velY else velY * -1
     }
 
 
