@@ -10,6 +10,7 @@ import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
 import Svg exposing (Svg, rect, svg)
 import Svg.Attributes exposing (..)
+import Html.Attributes
 
 
 main : Program () Model Msg
@@ -68,7 +69,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     ( case msg of
         SpawnCube ->
-            { model | allCubes = addCube { x = 50, y = 50, velX = 1, velY = 0 } model.allCubes }
+            { model | allCubes = addCube { x = 50, y = 50, velX = 1, velY = 1 } model.allCubes }
 
         OnAnimationFrameDelta delta ->
             { time = model.time + delta, allCubes = List.map updateSingleCube model.allCubes }
@@ -111,6 +112,7 @@ drawBoxes model =
         [ viewBox "0 0 400 400"
         , width "400"
         , height "400"
+        , Html.Attributes.style "background-color" "black"
         ]
         (List.map drawBox model)
 
